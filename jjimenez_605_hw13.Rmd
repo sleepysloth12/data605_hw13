@@ -1,0 +1,169 @@
+---
+title: "Data 605 Homework 13"
+author: "Jean Jimenez"
+date: "2023-11-21"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# #1
+
+## Question
+
+Use integration by substitution to solve the integral below
+
+$\int 4e^{-7x} \, dx$
+
+## Work
+
+Let $u = -7x$
+
+$du= -7 dx$
+
+$dx=- \frac{1}{7} du$
+
+That will make the integral
+
+$\int 4e^{u} \left(-\frac{1}{7}\right) \, du$
+
+$-\frac{4}{7} \int e^{u} du$
+
+Which is:
+
+$-\frac{4}{7} e^{u} + C$
+
+$-\frac{4}{7} e^{-7x} + C$
+
+## Answer
+
+$\int 4e^{-7x} \, dx= -\frac{4}{7} e^{-7x} + C$
+
+# #2
+
+## Question
+
+Biologists are treating a pond contaminated with bacteria. The level of contamination is changing at a rate of $\frac{dN}{dt}=-\frac{3150}{t^4}-220$ bacteria per cubic centimeter per day, where t is the number of days since treatment began.
+
+Find a function N( t ) to estimate the level of contamination if the level after 1 day was 6530 bacteria per cubic centimeter.
+
+## Work and Answer
+
+```{r}
+library(pracma)
+
+dN_dt = function(t) {
+    -3150 / t^4 - 220
+}
+
+n_t = function(t) {
+    int = integral(dN_dt, 1, t)
+    n_1 = 6530
+    n_t = int + n_1
+    return(n_t)
+}
+
+n_t(8)
+
+```
+
+The function n_t represents the answer N(t). For example; after 8 days, the level of contamination is estimated to be 3942.051.
+
+# #3
+
+## Question
+
+Find the total area of the red rectangles in the figure below, where the equation of the line is $f(x)=2x-9$
+
+![](3.png){width="306"}
+
+## Work and Answer
+
+I will estimate the area under the line using reimann sum.
+
+```{r}
+f = function(x) {
+  2 * x - 9
+}
+
+total_area = 0
+
+for (x in seq(4.5, 7.5, by = 1)) {
+  height = f(x)
+  width = 1
+  total_area = total_area + height * width
+}
+
+cat("The total area of the red rectanges is", total_area, "units cubed \n")
+
+```
+
+# #4
+
+## Question
+
+Find the area of the region bounded by the graphs of the given equations:
+
+$y=x^2-2x-2 , y=x+2$
+
+## Work and Answer
+
+```{r}
+y1 = function(x) { x^2 - 2*x - 2 }
+y2 = function(x) { x + 2 }
+
+#points of intersection
+
+points_of_intersection = function() {
+#quadratic form
+  solutions = polyroot(c(-4, -3, 1))
+  #only real no imaginary
+  real_solutions = Re(solutions)
+  return(real_solutions)
+}
+
+# area btween functions
+find_area = function(intersections) {
+  area = integrate(function(x) { y2(x) - y1(x) }, min(intersections), max(intersections))$value
+  #abs bc area is positive
+  return(abs(area))
+}
+
+#points of intersections and bounds
+intersections = points_of_intersection()
+area4 = find_area(intersections)
+
+
+cat("The area between the two functions is", area4, "units squared. \n")
+
+```
+
+# #5
+
+## Question
+
+A beauty supply store expects to sell 110 flat irons during the next year. It costs \$3.75 to store one flat iron for one year.
+
+There is a fixed cost of \$8.25 for each order. Find the lot size and the number of orders per year that will minimize inventory costs.
+
+## Work and Answer
+
+```{r}
+demand= 110
+fixed_cost=8.25
+hold_cost=3.75
+
+
+#EOQ forumla
+
+quant=sqrt((2*demand*fixed_cost)/hold_cost)
+order_n=demand/quant
+
+cat("The order quantity that minimizes inventory costs is", quant, "flat irons \n")
+
+cat("The number of orders per year that minimizes inventory costs is", order_n, "orders \n")
+```
